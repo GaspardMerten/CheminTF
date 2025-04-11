@@ -2,12 +2,12 @@
 import wandb
 from src.generate import generate_and_decode_next_patch
 
-batch_size = 1000  # The number of sequences to process at once, it has no impact on the model, just on training speed
+batch_size = 10  # The number of sequences to process at once, it has no impact on the model, just on training speed
 max_length = 100
-patch_size = 8  # The number of spatiotemporal points per embedding so actual amount of float in embedding is patch_size * 4 for lat,lon,daily_timestamp,weekday
-embedding_size = 10
-layers = 8
-heads = 4
+patch_size = 32  # The number of spatiotemporal points per embedding so actual amount of float in embedding is patch_size * 4 for lat,lon,daily_timestamp,weekday
+embedding_size = 512
+layers = 16
+heads = 8
 
 wandb.login(key="1f2171711d9db556b06aa9d93a311dc03885c163")
 # %%
