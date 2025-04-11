@@ -25,7 +25,7 @@ def train_model(
     project_name: str = "trajectory-llm",
     run_name: str = None,
 ):
-
+    os.makedirs("checkpoints", exist_ok=True)
 
     if save_path and os.path.exists(save_path):
         print("🔁 Loading existing model weights.")
@@ -102,6 +102,17 @@ def train_model(
                 "gpu/mem": current_mem,
                 "gpu/peak": peak_mem,
             }, step=global_step)
+
+        if global_step % 100 == 0:
+            save_path = f"checkpoints/model_step_{global_step}.pt"
+            torch.save({
+                'step': global_step,
+                'model_state_dict': model.state_dict(),
+                'optimizer_state_dict': optimizer.state_dict(),
+                'scaler_state_dict': scaler.state_dict(),
+                'loss': total_loss,
+            }, save_path)
+            tqdm.write(f"💾 Saved model checkpoint at step {global_step} to {save_path}")
 
         if global_step % eval_every == 0:
             model.eval()

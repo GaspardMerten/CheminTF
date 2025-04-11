@@ -1,6 +1,5 @@
-polars~=1.26.0
-torch~=2.6.0+cu118
-pyarrow~=19.0.1
-numpy~=2.1.2
-wandb~=0.19.9
+polars
+pyarrow
+numpy
+wandb
 tqdm
