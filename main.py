@@ -1,4 +1,6 @@
 # %%
+import os
+
 import wandb
 from src.generate import generate_and_decode_next_patch
 
@@ -8,8 +10,9 @@ patch_size = 32  # The number of spatiotemporal points per embedding so actual a
 embedding_size = 512
 layers = 16
 heads = 8
+accumulation_steps = 100
 
-wandb.login(key="1f2171711d9db556b06aa9d93a311dc03885c163")
+wandb.login(key=os.environ["WANDB_API_KEY"])
 # %%
 from src.utils.prepare_dataset import prepare_dataset
 
@@ -76,9 +79,9 @@ model = train_model(
     model=model,
     train_dataloader=train_dataloader,
     eval_dataloader=eval_dataloader,
-    max_steps=10000,
-    eval_every=50,
-    accumulation_steps=1,
+    max_steps=100000,
+    eval_every=100,
+    accumulation_steps=accumulation_steps,
     save_path="model.pt",
 )
 
