@@ -3,7 +3,6 @@ import torch.nn as nn
 
 from src import config
 
-
 class TrajectoryEmbedding(nn.Module):
     """
     Embeds each trajectory patch (flattened into a vector of size config.VALUES_PER_POINT * patch_size)
@@ -74,6 +73,9 @@ class CheminGPT(nn.Module):
 
     def forward(self, x):
         batch, seq_len, _ = x.size()
+        # save last embedding dimension
+        last_input_batch = x[:, -1, :].unsqueeze(1)
+
         # Convert patches to embeddings
         x = self.token_embedding(x.view(-1, self.patch_size * config.VALUES_PER_POINT))
         x = x.view(batch, seq_len, self.embedding_size)
@@ -88,4 +90,8 @@ class CheminGPT(nn.Module):
         x = self.ln_f(x)
         x = x.transpose(0, 1)
         logits = self.head(x)
+        # add back the last embedding dimension
+        logits += last_input_batch
+
+
         return logits

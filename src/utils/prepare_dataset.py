@@ -6,6 +6,29 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 
+def transform_float_list_back_to_trajectory(
+    trajectory: list[float]
+) -> list[list[float]]:
+    """
+    Convert a flattened trajectory back to a list of lists. A flatten trajectory is a list of floats
+    where the successive elements are the coordinates and the timestamp of the trajectory. For instance:
+    [lat1, lon1, timestamp1, lat2, lon2, timestamp2, ...]
+    or more generally:
+    [lat1, lon1, *attribute1, timestamp1, lat2, lon2, *attribute2, timestamp2, ...]
+    """
+    new_trajectory = []
+    for group_index in range(0, len(trajectory), 3):
+        # Extract the group of 4 elements
+        group = list(map(float,list(trajectory[group_index : group_index + 3])))
+        group[0] = group[0] * 90
+        group[1] = group[1] * 180
+        group[2] = group[2] * 86400
+
+        # Append the group to the new trajectory
+        new_trajectory.append(group)
+    return new_trajectory
+
+
 def prepare_dataset(
     data_folder: str = "data",
     output_folder: str = "prepared_data",
@@ -48,15 +71,11 @@ def prepare_dataset(
                     % 86400  # Get seconds of the day
                     / (1 if not scale else 86400)  # Scale to [0, 1] if scale is True
                 ),
-                day_of_week=pl.col(base_date_time_column)
-                .str.strptime(pl.Datetime)
-                .dt.weekday() / 6,  # Scale to [0, 1]
             )
             # keep only the columns we need
-            df = df.select(["LAT", "LON", "timestamp", "day_of_week", mmsi_column])
+            df = df.select(["LAT", "LON", "timestamp", mmsi_column])
 
             # Save the processed DataFrame to parquet, index by MMSI
-            output_file = os.path.join(data_folder, parquet_file_name)
             train_trajectories = []
             test_trajectories = []
             print("unique mmsi", df[mmsi_column].n_unique())
@@ -71,7 +90,6 @@ def prepare_dataset(
                         row["LAT"],
                         row["LON"],
                         row["timestamp"],
-                        float(row["day_of_week"]),
                     ]
 
                 if random.random() < training_ratio:
@@ -85,7 +103,6 @@ def prepare_dataset(
             save_trajectories_to_parquet(
                 test_trajectories, test_folder, parquet_file_name, split
             )
-
 
 def save_trajectories_to_parquet(trajectories, output_folder, parquet_file_name, split):
     # create files with each max split size
@@ -107,6 +124,7 @@ def save_trajectories_to_parquet(trajectories, output_folder, parquet_file_name,
             os.path.join(output_folder, chunk_file_name),
             compression="snappy",
         )
+
 
 
 if __name__ == "__main__":
