@@ -18,3 +18,9 @@ notebooks are meant to be used as a learning resource.
 
 To open the main notebook in Google Colab, click on the following link
 [Open CheminTF in Google Colab](https://colab.research.google.com/github/GaspardMerten/cheminTF/blob/main/notebooks/chemintf.ipynb).
+
+
+## Datasets
+
+The datasets used in the tutorial are listed in the [DATASETS.md](https://github.com/GaspardMerten/cheminTF/blob/main/DATASETS.md) file.
+

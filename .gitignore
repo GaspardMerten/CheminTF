@@ -1,0 +1,17 @@
+wandb/
+.venv/
+model/
+data/
+prepared_data/
+
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+*.whl
+*.tar.gz
+*.zip
+*.log
