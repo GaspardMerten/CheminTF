@@ -1,5 +1,11 @@
-polars
-pyarrow
-numpy
-wandb
-tqdm
+polars~=1.26.0
+pyarrow~=19.0.1
+numpy~=2.1.2
+wandb~=0.19.9
+tqdm~=4.67.1
+torch~=2.6.0+cu118
+matplotlib~=3.10.1
+torchviz~=0.0.3
+seaborn~=0.13.2
+pandas~=2.2.3
+utm~=0.8.1
