@@ -17,4 +17,4 @@ In the notebooks directory, there is chemintf which is meant to be followed duri
 notebooks are meant to be used as a learning resource.
 
 To open the main notebook in Google Colab, click on the following link
-[Open CheminTF in Google Colab](https://github.com/GaspardMerten/CheminTF/blob/main/notebooks/chemintf.ipynb).
+[Open CheminTF in Google Colab](https://colab.research.google.com/github/GaspardMerten/cheminTF/blob/main/notebooks/chemintf.ipynb).
