@@ -2,7 +2,7 @@
 
 ## Repository for the Sigspatial 2025 tutorial: Building a Foundation Model for Trajectory from Scratch
 
-CheminTF is a an educational model repository for the SIGSPATIAL 2025 tutorial on building a foundation model for trajectory prediction from scratch.
+CheminTF is an educational model repository for the SIGSPATIAL 2025 tutorial on building a foundation model for trajectory prediction from scratch. It serves as a mockup model, designed to be a foundational basis for developing more complex and specialized trajectory prediction models.
 
 ## Repository structure
 
@@ -19,8 +19,49 @@ notebooks are meant to be used as a learning resource.
 To open the main notebook in Google Colab, click on the following link
 [Open CheminTF in Google Colab](https://colab.research.google.com/github/GaspardMerten/cheminTF/blob/main/notebooks/chemintf.ipynb).
 
+## Source Code Modules (`src/`)
 
-## Datasets
+The `src` directory contains the Python modules that make up the CheminTF model.
 
-The datasets used in the tutorial are listed in the [DATASETS.md](https://github.com/GaspardMerten/cheminTF/blob/main/DATASETS.md) file.
+*   **`dataset.py`**: This module is responsible for generating and preparing the synthetic trajectory data used for training and evaluation. The `SyntheticTrajectoryDataset` class creates trajectories with random starting points, movements, and noise.
 
+*   **`evaluate.py`**: This module provides the `evaluate_and_plot` function to assess the performance of a trained model. It loads a model checkpoint, generates predictions on a validation set, and plots the results.
+
+*   **`synthetic_trajectory.py`**: This module contains the `SyntheticTrajectoryGenerator` class, which is the core of the data generation process. It creates a sequence of (latitude, longitude, timestamp) points that simulate a trajectory.
+
+*   **`train.py`**: This is the main training script. It orchestrates the training process, including:
+    *   Splitting the data into training and validation sets.
+    *   Setting up the model, loss function, and optimizer.
+    *   Running the training and validation loops.
+    *   Visualizing predictions at the end of each epoch.
+    *   Saving the trained model.
+
+*   **`modules/`**: This sub-directory contains the building blocks of the CheminTF model architecture.
+    *   **`constants.py`**: Defines global constants used across the project, such as embedding dimensions and feature sizes.
+    *   **`encoder.py`**: Implements the `SpatioTemporalEncoder`, which takes raw spatial and temporal features and projects them into a high-dimensional embedding space.
+    *   **`features.py`**: Contains functions for feature engineering. `extract_spatial_features` and `extract_temporal_features` convert raw coordinates and timestamps into meaningful features for the model.
+    *   **`model.py`**: Defines the main `CheminTF` class, which assembles the complete Transformer-based architecture.
+    *   **`output.py`**: Implements the `OutputModule`, a linear layer that maps the final transformer hidden states to the output prediction (delta latitude, delta longitude, delta time).
+    *   **`position.py`**: Implements `LearnedPositionalEncoding` to inject positional information into the input sequence, allowing the model to understand the order of the trajectory points.
+
+## Notebooks (`notebooks/`)
+
+The `notebooks` directory provides a hands-on, educational path to understanding the CheminTF model.
+
+*   **`chemintf.ipynb`**: This is the main, self-contained notebook for the tutorial. It includes all the code from the `src` directory, allowing you to run the entire project in a single environment like Google Colab.
+
+*   **Step-by-Step Tutorial Notebooks**: These notebooks break down the model into its core components, providing detailed explanations and visualizations for each part. They are designed to be followed in order:
+    1.  **`step_1_building_an_encoder.ipynb`**: Focuses on the feature extraction and encoding process.
+    2.  **`step_2_adding_gpt2_like_positional_encoding.ipynb`**: Explains and implements positional encoding.
+    3.  **`step_3_transformer_block.ipynb`**: Details the Transformer encoder architecture.
+    4.  **`step_4_working_model.ipynb`**: Assembles all the components into a complete, working model.
+
+## Authors
+
+This repository is developed and maintained by:
+
+*   [Gaspard Merten](https://github.com/GaspardMerten/)
+*   [Mahmoud Sakr](https://github.com/mahmsakr)
+*   [Gilles Dejaegere](https://github.com/gdejaege)
+
+All authors are affiliated with the [Université Libre de Bruxelles (ULB)](https://www.ulb.be).
