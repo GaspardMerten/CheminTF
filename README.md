@@ -9,6 +9,7 @@ CheminTF is an educational model repository for the SIGSPATIAL 2025 tutorial on 
 The repository has two main directories:
 - `src`: Contains the source code for the model, including data processing, model architecture, training scripts, and evaluation scripts. It is meant to be a reusable codebase for building trajectory prediction models.
 - `notebooks`: Contains Jupyter notebooks that contains the same code as the `src` directory, but with additional explanations, visualizations, and is self-contained for educational purposes. It is meant to be a learning resource for understanding the model and its components.
+- `weights`: Stores pre-trained model weights, allowing for quick deployment and evaluation without retraining.
 
 
 ## Opening the notebooks in Google Colab
