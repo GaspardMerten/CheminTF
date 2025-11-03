@@ -3,10 +3,10 @@ from torch import nn, Tensor
 from torch.utils.data import DataLoader
 from torch.optim import Adam
 from tqdm import tqdm
-import matplotlib.pyplot as plt
 from src.dataset import SyntheticTrajectoryDataset
 from src.modules.model import CheminTF
-from src.modules.features import extract_spatial_features, extract_temporal_features
+from src.predict import predict_autoregressive
+from src.plot import plot_trajectories
 
 
 # ============================================================
@@ -30,75 +30,6 @@ def collate_batch(batch: list[tuple[list, tuple[Tensor, Tensor], Tensor]]) -> tu
     delta_batch = pad_sequence(delta_seqs)
     return original, spatial_batch, temporal_batch, delta_batch
 
-
-# ============================================================
-# Autoregressive prediction
-# ============================================================
-
-
-@torch.no_grad()
-def predict_autoregressive(
-    model,
-    init_coords: torch.Tensor,   # [T₀, 2]
-    init_times: torch.Tensor,    # [T₀]
-    num_future_steps: int,
-    device: str = "cuda" if torch.cuda.is_available() else "cpu",
-) -> tuple[torch.Tensor, torch.Tensor]:
-    """
-    Autoregressively predicts future trajectory points given an initial seed.
-    """
-    model.eval()
-    coords = init_coords.clone().to(device)
-    times = init_times.clone().to(device)
-
-    for step in range(num_future_steps):
-        # 1️⃣ Extract features for current sequence
-        spatial_feats = extract_spatial_features(coords).unsqueeze(1).to(device)
-        temporal_feats = extract_temporal_features(times).unsqueeze(1).to(device)
-
-        # max 49 points for the model
-        if spatial_feats.shape[0] > 49:
-            spatial_feats = spatial_feats[-49:, :, :]
-            temporal_feats = temporal_feats[-49:, :, :]
-
-        preds = model(spatial_feats, temporal_feats)  # [T, 1, D_out]
-        next_delta = preds[-1, 0]                     # [D_out] (still on device)
-
-        dlat, dlng, dt = next_delta
-        dlat, dlng = dlat / 1000.0, dlng / 1000.0  # scale back
-        dlat = dlat
-        dlng = dlng
-        dt = dt * 60.0                         # scale back to seconds
-        next_t = times[-1] + dt
-
-        next_coord = coords[-1] + torch.tensor([dlat, dlng], device=device)
-        coords = torch.cat([coords, next_coord.unsqueeze(0)], dim=0)
-        times = torch.cat([times, next_t.unsqueeze(0)], dim=0)
-
-
-    return coords, times
-
-# ============================================================
-# Plotting function
-# ============================================================
-
-def plot_trajectories(true_coords: torch.Tensor, pred_coords: torch.Tensor, epoch: int):
-        true_coords = true_coords.cpu().numpy()
-        pred_coords = pred_coords.cpu().numpy()
-
-        plt.figure(figsize=(5, 5))
-        plt.plot(true_coords[:, 0], true_coords[:, 1], "b.-", label="True")
-        plt.plot(pred_coords[len(true_coords)-1::, 0, ], pred_coords[len(true_coords)-1:, 1, ], "orange", label="Predicted")
-        plt.scatter(true_coords[0, 0], true_coords[0, 1], c="green", label="Start", zorder=5)
-        plt.scatter(pred_coords[-1, 0], pred_coords[-1, 1], c="red", label="Pred End", zorder=5)
-        plt.title(f"Autoregressive Prediction — Epoch {epoch+1}")
-        plt.xlabel("Latitude")
-        plt.ylabel("Longitude")
-        plt.legend()
-        plt.axis("equal")
-        plt.grid(True)
-        plt.tight_layout()
-        plt.show()
 
 
 # ============================================================

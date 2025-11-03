@@ -3,7 +3,10 @@ from torch.utils.data import DataLoader
 
 from src.dataset import SyntheticTrajectoryDataset
 from src.modules.model import CheminTF
-from src.train import collate_batch, predict_autoregressive, plot_trajectories
+
+from src.train import collate_batch
+from src.predict import predict_autoregressive
+from src.plot import plot_trajectories
 
 
 def evaluate_and_plot(
@@ -32,7 +35,9 @@ def evaluate_and_plot(
     # Prepare validation data
     # ============================================================
     dataset = SyntheticTrajectoryDataset(num_trajectories=num_trajectories)
-    val_loader = DataLoader(dataset, batch_size=1, shuffle=False, collate_fn=collate_batch)
+    val_loader = DataLoader(
+        dataset, batch_size=1, shuffle=False, collate_fn=collate_batch
+    )
     val_iter = iter(val_loader)
 
     # ============================================================
