@@ -1,9 +1,6 @@
 import math
 import random
-import time
 from typing import List, Tuple
-
-from torch.utils.data import Dataset
 
 
 class SyntheticTrajectoryGenerator:
@@ -17,6 +14,7 @@ class SyntheticTrajectoryGenerator:
         delta_lat: float = 0.001,
         delta_lng: float = 0.001,
         noise: float = 0.0,
+            enable_turns: bool = True,
         jitter_time: bool = False,
         seed: int = None,
     ):
@@ -30,6 +28,7 @@ class SyntheticTrajectoryGenerator:
         self.delta_lng = delta_lng
         self.noise = noise
         self.jitter_time = jitter_time
+        self.enable_turns = enable_turns
 
         if start_timestamp is None:
             import datetime
@@ -45,7 +44,7 @@ class SyntheticTrajectoryGenerator:
 
         trajectory = []
 
-        num_turns = random.randint(1, 5)
+        num_turns = random.randint(1, 5) if self.enable_turns else 0
         turning_points = sorted(random.sample(range(2, self.num_points - 2), num_turns))
 
         delta_lat = self.delta_lat
@@ -64,7 +63,7 @@ class SyntheticTrajectoryGenerator:
             # Add noise and jitter
             noise_lat = random.uniform(-self.noise, self.noise)
             noise_lng = random.uniform(-self.noise, self.noise)
-            time_offset = random.randint(-5, 5) if self.jitter_time else 0
+            time_offset = random.randint(1, self.step_seconds - 1) if self.jitter_time else self.step_seconds
 
             trajectory.append(
                 (lng + noise_lng, lat + noise_lat, timestamp + time_offset)
@@ -72,45 +71,7 @@ class SyntheticTrajectoryGenerator:
 
             lat += delta_lat
             lng += delta_lng
-            timestamp += self.step_seconds
+            timestamp += time_offset
 
         return trajectory
 
-
-class SyntheticTrajectoryDataset(Dataset):
-    def __init__(self, num_trajectories: int, center_lat: float = 56.0, center_lng: float = 8.0):
-        self.trajs = []
-        self.labels = []
-
-        for _ in range(num_trajectories):
-            seed = random.randint(0, int(1e6))
-            random.seed(seed)
-
-            # Fully randomized generation parameters
-            generator = SyntheticTrajectoryGenerator(
-                start_lat=random.uniform(55.5, 56.5),
-                start_lng=random.uniform(7.5, 8.5),
-                start_timestamp=int(time.time()) + random.randint(-1000, 1000),
-                step_seconds=random.choice([30, 60, 120]),
-                num_points=random.randint(10, 30),
-                delta_lat=random.uniform(-0.01, 0.01),
-                delta_lng=random.uniform(-0.01, 0.01),
-                noise=random.uniform(0.0, 0.001),
-                jitter_time=random.choice([True, False]),
-                seed=seed,
-            )
-
-            label = 0  # placeholder (you can use directionality or curvature to define labels if needed)
-
-            traj = generator.generate()
-            tensor = trajectory_to_time_annotated_utm_trajectory(traj, center_lat, center_lng)
-
-            self.trajs.append(tensor)
-            self.labels.append(label)
-
-
-    def __len__(self):
-        return len(self.trajs)
-
-    def __getitem__(self, idx):
-        return self.trajs[idx], self.labels[idx]
