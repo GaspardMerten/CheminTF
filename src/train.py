@@ -61,7 +61,6 @@ def predict_autoregressive(
             spatial_feats = spatial_feats[-49:, :, :]
             temporal_feats = temporal_feats[-49:, :, :]
 
-        # 2️⃣ Predict next-step delta
         preds = model(spatial_feats, temporal_feats)  # [T, 1, D_out]
         next_delta = preds[-1, 0]                     # [D_out] (still on device)
 
@@ -71,7 +70,7 @@ def predict_autoregressive(
         dlng = dlng
         dt = dt * 60.0                         # scale back to seconds
         next_t = times[-1] + dt
-        # 3️⃣ Append predicted point (everything stays on device)
+
         next_coord = coords[-1] + torch.tensor([dlat, dlng], device=device)
         coords = torch.cat([coords, next_coord.unsqueeze(0)], dim=0)
         times = torch.cat([times, next_t.unsqueeze(0)], dim=0)
@@ -132,7 +131,6 @@ def train_model(
     # ---------------------- Metric storage ----------------------
     train_losses, val_losses, val_rmses = [], [], []
 
-    # 🟣 pick a reference trajectory *from the validation dataset*
     *_, deltas_ref = val_dataset[0]
 
 
@@ -203,9 +201,6 @@ def train_model(
     return model
 
 
-# ============================================================
-# Entry point
-# ============================================================
 
 if __name__ == "__main__":
     trained_model = train_model(num_epochs=100, batch_size=128, device="cuda")
