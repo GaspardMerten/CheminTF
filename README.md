@@ -16,7 +16,10 @@ The repository has two main directories:
   explanations, visualizations, and is self-contained for educational purposes. It is meant to be a learning resource
   for understanding the model and its components.
 - `weights`: Stores pre-trained model weights, allowing for quick deployment and evaluation without retraining.
-- `Slides.pdf`: The slides used during the SIGSPATIAL 2025 tutorial presentation.
+- `Slides.pdf`: The slides used during the [SIGSPATIAL 2025 tutorial presentation](https://drive.google.com/file/d/1f71YpgT_Qs6g9lv0RgWphcp7FYL-jyYK/view). 
+  You can also access them 
+  [in Google slides](https://docs.google.com/presentation/d/1V9tzojY14bL9RbNIlVyHrkj47ZCgB1APsd9ZTROfZmY/edit?usp=sharing)
+  to view the animations and videos.
 
 ## Opening the notebooks in Google Colab
 
@@ -82,4 +85,4 @@ This repository is developed and maintained by:
 * [Mahmoud Sakr](https://github.com/mahmsakr)
 * [Gilles Dejaegere](https://github.com/gdejaege)
 
-All authors are affiliated with the [Université Libre de Bruxelles (ULB)](https://www.ulb.be).
+All authors are affiliated with the [Université libre de Bruxelles (ULB)](https://www.ulb.be).
