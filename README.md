@@ -53,14 +53,14 @@ The `src` directory contains the Python modules that make up the CheminTF model.
 * **`modules/`**: This sub-directory contains the building blocks of the CheminTF model architecture.
     * **`constants.py`**: Defines global constants used across the project, such as embedding dimensions and feature
       sizes.
-    * **`encoder.py`**: Implements the `SpatioTemporalEncoder`, which takes raw spatial and temporal features and
+    * **`embedding.py`**: Implements the `SpatioTemporalEmbeddings`, which takes encoded spatial and temporal features and
       projects them into a high-dimensional embedding space.
-    * **`features.py`**: Contains functions for feature engineering. `extract_spatial_features` and
-      `extract_temporal_features` convert raw coordinates and timestamps into meaningful features for the model.
+    * **`features.py`**: Contains functions for feature engineering. `spatial_encoding` and
+      `temporal_encoding` convert raw coordinates and timestamps into meaningful features for the model.
     * **`model.py`**: Defines the main `CheminTF` class, which assembles the complete Transformer-based architecture.
     * **`output.py`**: Implements the `OutputModule`, a linear layer that maps the final transformer hidden states to
       the output prediction (delta latitude, delta longitude, delta time).
-    * **`position.py`**: Implements `LearnedPositionalEncoding` to inject positional information into the input
+    * **`position.py`**: Implements `PositionalEmbedding` to inject positional information into the input
       sequence, allowing the model to understand the order of the trajectory points.
 
 ## Notebooks (`notebooks/`)
