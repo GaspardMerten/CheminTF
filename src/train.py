@@ -7,7 +7,7 @@ from src.dataset import SyntheticTrajectoryDataset
 from src.modules.model import CheminTF
 from src.predict import predict_autoregressive
 from src.plot import plot_trajectories
-
+from matplotlib import pyplot as plt
 
 # ============================================================
 # Collate function
