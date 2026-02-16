@@ -2,9 +2,9 @@ import torch
 from torch import nn, Tensor
 
 from src.modules import constants
-from src.modules.encoder import SpatioTemporalEncoder
+from src.modules.embedding import SpatioTemporalEmbeddings
 from src.modules.output import OutputModule
-from src.modules.position import LearnedPositionalEncoding
+from src.modules.position import PositionalEmbedding
 
 
 def causal_mask(seq_len: int) -> Tensor:
@@ -26,18 +26,18 @@ class CheminTF(nn.Module):
     ):
         super().__init__()
 
-        self.input_encoder = SpatioTemporalEncoder(
-            spatial_features_dimension=constants.SPATIAL_FEATURES_DIMENSION,
-            temporal_features_dimension=constants.TEMPORAL_FEATURES_DIMENSION,
+        self.vector_embedding_layer = SpatioTemporalEmbeddings(
+            spatial_encoding_dimension=constants.SPATIAL_ENCODING_DIMENSION,
+            temporal_encoding_dimension=constants.TEMPORAL_ENCODING_DIMENSION,
             spatial_embedding_dimension=constants.SPATIAL_EMBEDDING_DIMENSION,
             temporal_embedding_dimension=constants.TEMPORAL_EMBEDDING_DIMENSION,
         )
 
-        self.pos_encoder = LearnedPositionalEncoding(
+        self.pos_embedding_layer = PositionalEmbedding(
             embedding_dim=constants.EMBEDDING_DIMENSION, max_seq_len=max_len
         )
 
-        encoder_layer = nn.TransformerEncoderLayer(
+        transformer_layer = nn.TransformerEncoderLayer(
             d_model=embed_dim,
             # activation => we want some non-linearity here but we want to keep negative values
             activation="gelu",
@@ -48,19 +48,19 @@ class CheminTF(nn.Module):
             dtype=torch.float32,
         )
 
-        self.transformer = nn.TransformerEncoder(encoder_layer, num_layers=num_layers)
+        self.transformer = nn.TransformerEncoder(transformer_layer, num_layers=num_layers)
 
         self.output = OutputModule(embed_dim=embed_dim)
 
 
     def forward(self, spatial_input: torch.Tensor, temporal_input: torch.Tensor):
         # x: [T, B, D]
-        x = self.input_encoder(spatial_input, temporal_input)
+        vector_embeddings = self.vector_embedding_layer(spatial_input, temporal_input)
         # x: [T, B, D]
-        T, B, D = x.shape
-        x = self.pos_encoder(x)  # [T, B, E]
-        mask = causal_mask(T).to(x.device)  # [T, T]
+        T, B, D = vector_embeddings.shape
+        embeddings = self.pos_embedding_layer(vector_embeddings)  # [T, B, E]
+        mask = causal_mask(T).to(embeddings.device)  # [T, T]
 
-        x = self.transformer(x, mask=mask)  # [T, B, E]
+        x = self.transformer(embeddings, mask=mask)  # [T, B, E]
 
         return self.output(x)

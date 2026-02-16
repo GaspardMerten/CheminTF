@@ -3,7 +3,7 @@ import time
 import torch
 from torch import Tensor
 from torch.utils.data import Dataset
-from src.modules.features import extract_spatial_features, extract_temporal_features
+from src.modules.features import spatial_encoding, temporal_encoding
 from src.synthetic_trajectory import SyntheticTrajectoryGenerator
 
 
@@ -46,12 +46,12 @@ class SyntheticTrajectoryDataset(Dataset):
             traj = generator.generate()
             coords = torch.tensor([[p[0], p[1]] for p in traj], dtype=torch.float32)
             times = torch.tensor([p[2] for p in traj], dtype=torch.float64)
-            temporal_tensor = extract_temporal_features(times[:-1])
+            temporal_tensor = temporal_encoding(times[:-1])
             spatial_deltas = (coords[1:] - coords[:-1]) * 1000
             temporal_deltas = (times[1:] - times[:-1]) / 60
             temporal_deltas = temporal_deltas.to(torch.float32)
             deltas = torch.cat([spatial_deltas, temporal_deltas.unsqueeze(-1)], dim=-1)
-            spatial_tensor = extract_spatial_features(coords[:-1])
+            spatial_tensor = spatial_encoding(coords[:-1])
             assert len(spatial_tensor) == len(deltas)
 
             self.trajs.append((spatial_tensor, temporal_tensor))

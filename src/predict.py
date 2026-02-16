@@ -1,5 +1,5 @@
 import torch
-from src.modules.features import extract_spatial_features, extract_temporal_features
+from src.modules.features import spatial_encoding, temporal_encoding
 
 @torch.no_grad()
 def predict_autoregressive(
@@ -18,8 +18,8 @@ def predict_autoregressive(
 
     for step in range(num_future_steps):
         # 1️⃣ Extract features for current sequence
-        spatial_feats = extract_spatial_features(coords).unsqueeze(1).to(device)
-        temporal_feats = extract_temporal_features(times).unsqueeze(1).to(device)
+        spatial_feats = spatial_encoding(coords).unsqueeze(1).to(device)
+        temporal_feats = temporal_encoding(times).unsqueeze(1).to(device)
 
         # max 49 points for the model
         if spatial_feats.shape[0] > 49:

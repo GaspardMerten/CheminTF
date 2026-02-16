@@ -2,7 +2,7 @@ import torch
 from torch import nn
 
 
-class LearnedPositionalEncoding(nn.Module):
+class PositionalEmbedding(nn.Module):
     """GPT-2 style learnable positional encoding."""
 
     def __init__(self, embedding_dim: int, max_seq_len: int):

@@ -3,9 +3,9 @@ from torch import nn
 from src.modules import constants
 
 
-class SpatioTemporalEncoder(nn.Module):
+class SpatioTemporalEmbeddings(nn.Module):
     """
-    Encodes spatial and temporal features into a combined embedding,
+    Projects encoded spatial and temporal features into a combined embedding,
     with built-in normalization to align feature scales.
 
     Each feature dimension is standardized across the batch and time axes
@@ -15,8 +15,8 @@ class SpatioTemporalEncoder(nn.Module):
 
     def __init__(
         self,
-        spatial_features_dimension: int = constants.SPATIAL_FEATURES_DIMENSION,
-        temporal_features_dimension: int = constants.TEMPORAL_FEATURES_DIMENSION,
+        spatial_encoding_dimension: int = constants.SPATIAL_ENCODING_DIMENSION,
+        temporal_encoding_dimension: int = constants.TEMPORAL_ENCODING_DIMENSION,
         spatial_embedding_dimension: int = constants.SPATIAL_EMBEDDING_DIMENSION,
         temporal_embedding_dimension: int = constants.TEMPORAL_EMBEDDING_DIMENSION,
         eps: float = 1e-6,
@@ -24,10 +24,10 @@ class SpatioTemporalEncoder(nn.Module):
         super().__init__()
         self.eps = eps
         self.spatial_fc = nn.Linear(
-            spatial_features_dimension, spatial_embedding_dimension, dtype=torch.float32
+            spatial_encoding_dimension, spatial_embedding_dimension, dtype=torch.float32
         )
         self.temporal_fc = nn.Linear(
-            temporal_features_dimension,
+            temporal_encoding_dimension,
             temporal_embedding_dimension,
             dtype=torch.float32,
         )

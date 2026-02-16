@@ -8,7 +8,7 @@ SCALING_FACTOR_X = 400000.0
 DELTA_SCALING_FACTOR_X = 1000.0
 
 
-def extract_spatial_features(
+def spatial_encoding(
     coordinates: torch.Tensor,
 ) -> torch.Tensor:
 
@@ -43,7 +43,7 @@ def cyclic_encoding(value: torch.Tensor, period: float) -> torch.Tensor:
 import torch
 import datetime
 
-def extract_temporal_features(timestamps: torch.Tensor) -> torch.Tensor:
+def temporal_encoding(timestamps: torch.Tensor) -> torch.Tensor:
     """
     Encode timestamps into cyclic temporal features.
 
